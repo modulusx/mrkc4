@@ -56,24 +56,36 @@
 		 * - you can optimize or replace existing code
 		 * - commit as often as you would normally
 		 **/
-		// Dynamically size the table.
 
-		// Allow the table to be dynamically sized
+		// Dynamically size the table.
 		var tableWidth = 7;
 		var tableHeight = 6;
 		var tableSize = [tableWidth, tableHeight];
 
-		// Initialize an array containing the current index for each empty row
-		var activeRow = Array.apply(null, new Array(tableWidth)).map(Number.prototype.valueOf,tableHeight-1);;
+		// Maintain state of the gameboard in a 2D array
+		var tableState = _.range(tableWidth).map(function () {
+			return _.range(tableHeight).map(function () {
+				return 0;
+			});
+		});
 
+		// Initialize an array containing the current index for each unfilled row
+		var activeRow = _.range(tableWidth).map(function() { return tableHeight-1; });
+
+		// Keep track of the total number of moves
+		var totalMoves = 0;
 		var lastMovedBy = false;
 		var currentPlayer = false;
 		var dropCircle = function(colIndex) {
+			// Keep track of the total number of moves
+			totalMoves++;
 			lastMovedBy = currentPlayer;
 			currentPlayer = !currentPlayer;
+
 			// Position should be the first empty spot starting at the table going up
 			var pos = activeRow[colIndex]--;
 			$('.item.col-' + colIndex + '.row-' + pos).addClass((currentPlayer ? 'yellow' : 'red'));
+			tableState[colIndex][pos] = currentPlayer ? 1 : 2;
 			tryToGameOver(colIndex, pos);
 
 			// Unbind the click listener on a full column
@@ -82,6 +94,10 @@
 			}
 		};
 		var tryToGameOver = function(col, row) {
+			// End the game on a Tie if no one wins and board is full
+			if (totalMoves === (tableHeight * tableWidth)) {
+				alert('Game Over - Tie Game!');
+			}
 		};
 		var gameOver = function() {
 			var winner = (lastMovedBy) ? 'yellow' : 'red';
