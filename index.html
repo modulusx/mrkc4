@@ -19,6 +19,7 @@
 		border: 5px solid blue;
 	}
 	.item.active {
+		background-color: #00ff00;
 	}
 	.item.red {
 		background-color: #ff0000;
@@ -55,15 +56,30 @@
 		 * - you can optimize or replace existing code
 		 * - commit as often as you would normally
 		 **/
-		var tableSize = [7, 6];
+		// Dynamically size the table.
+
+		// Allow the table to be dynamically sized
+		var tableWidth = 7;
+		var tableHeight = 6;
+		var tableSize = [tableWidth, tableHeight];
+
+		// Initialize an array containing the current index for each empty row
+		var activeRow = Array.apply(null, new Array(tableWidth)).map(Number.prototype.valueOf,tableHeight-1);;
+
 		var lastMovedBy = false;
 		var currentPlayer = false;
 		var dropCircle = function(colIndex) {
 			lastMovedBy = currentPlayer;
 			currentPlayer = !currentPlayer;
-			var pos = 0; // start your way from here
+			// Position should be the first empty spot starting at the table going up
+			var pos = activeRow[colIndex]--;
 			$('.item.col-' + colIndex + '.row-' + pos).addClass((currentPlayer ? 'yellow' : 'red'));
 			tryToGameOver(colIndex, pos);
+
+			// Unbind the click listener on a full column
+			if (pos === 0) {
+				$('.item.col-' + colIndex + '.row-' + pos).unbind('click');
+			}
 		};
 		var tryToGameOver = function(col, row) {
 		};
