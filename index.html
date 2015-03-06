@@ -5,6 +5,8 @@
 	<title>Connect 4</title>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.2/normalize.min.css">
 	<style type="text/css" media="all">
+	#header {
+	}
 	#main {
 		background-color: blue;
 		width: 350px;
@@ -33,6 +35,14 @@
 	</style>
 </head>
 <body>
+	<div id="header">
+		<span id="wins">
+			<p>Yellow: 0, Red: 0</p>
+		</span>
+		<span id="turn">
+			<p>It's Yellow's turn</p>
+		</span>
+	</div>
 	<div id="main">
 	</div>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
@@ -60,30 +70,51 @@
 		// Dynamically size the table.
 		var tableWidth = 7;
 		var tableHeight = 6;
-		var tableSize = [tableWidth, tableHeight];
 
 		// Number of consecutive pieces required to win
 		var piecesToWin = 4;
 
-		// Maintain state of the gameboard in a 2D array
-		var tableState = _.range(tableWidth).map(function () {
-			return _.range(tableHeight).map(function () {
-				return 0;
-			});
-		});
+		// Variable to track the state of the game board
+		var tableState;
 
-		// Initialize an array containing the current index for each unfilled row
-		var activeRow = _.range(tableWidth).map(function() { return tableHeight-1; });
+		// Array to track the row index for each unfilled row
+		var activeRow;
 
 		// Keep track of the total number of moves
-		var totalMoves = 0;
-		var lastMovedBy = false;
-		var currentPlayer = false;
+		var totalMoves;
+		var currentPlayer;
+
+		// Keep track of wins
+		var winsYellow = 0;
+		var winsRed = 0;
+
+		// Reset the game to defalt state
+		var resetGame = function() {
+			totalMoves = 0;
+			currentPlayer = false;
+
+			// Initialize an array containing the current index for each unfilled row
+			activeRow = _.range(tableWidth).map(function() { return tableHeight-1; });
+
+			// Maintain state of the gameboard in a 2D array
+			tableState = _.range(tableWidth).map(function () {
+				return _.range(tableHeight).map(function () {
+					return 0;
+				});
+			});
+
+			// Reset the game board
+			$('#main').html("");
+			_(tableHeight).times(function(rowIndex) {
+				_(tableWidth).times(function(colIndex) {
+					$('#main').append(createConnectCircle(colIndex, rowIndex));
+				});
+			});
+		}
 
 		var dropCircle = function(colIndex) {
 			// Keep track of the total number of moves
 			totalMoves++;
-			lastMovedBy = currentPlayer;
 			currentPlayer = !currentPlayer;
 
 			// Position should be the first empty spot starting at the table going up
@@ -91,21 +122,29 @@
 
 			$('.item.col-' + colIndex + '.row-' + pos).addClass((currentPlayer ? 'yellow' : 'red'));
 			tableState[colIndex][pos] = currentPlayer ? 1 : 2;
-			tryToGameOver(colIndex, pos);
 
 			// Unbind the click listener on a full column
 			if (pos === 0) {
 				$('.item.col-' + colIndex + '.row-' + pos).unbind('click');
 			}
+
+			// Check to see if the game is over
+			tryToGameOver(colIndex, pos);
 		};
 		var tryToGameOver = function(col, row) {
 			// Check to see if the current player just won the game
 			if (1 + piecesInRow(col,row,0) >= piecesToWin) {
-				alert('Game Over - '+((currentPlayer ? 'Yellow' : 'Red')+' wins the game!'));
+				if (currentPlayer) {
+					winsYellow++;
+				}
+				else {
+					winsRed++;
+				}
+				gameOver(currentPlayer ? 'Yellow' : 'Red');
 			}
 			// End the game on a Tie if no one wins and board is full
 			else if (totalMoves === (tableHeight * tableWidth)) {
-				alert('Game Over - Tie Game!');
+				gameOver();
 			}
 		};
 		// Recursive function to return value of the row with the most consecutive pieces for the current player
@@ -148,9 +187,17 @@
 					break;
 			}
 		};
-		var gameOver = function() {
-			var winner = (lastMovedBy) ? 'yellow' : 'red';
-			console.log('Winner: ' + winner);
+		var gameOver = function(winner) {
+			if (winner) {
+				alert('Game Over - '+ winner +' wins the game!');
+				$( '#wins' ).html("<p>Yellow: "+winsYellow+", Red: "+winsRed+"</p>");
+				console.log('Winner: ' + winner);
+			}
+			else {
+				alert('Game Over - Tie Game!');
+				console.log('Tie Game!');
+			}
+			resetGame();
 		};
 		var createConnectCircle = function(colIndex, rowIndex) {
 			var item = $('<div>').addClass('item').addClass('col-' + colIndex).addClass('row-' + rowIndex);
@@ -164,12 +211,9 @@
 			var colIndex = $(this).prop('class').split(' ')[1].split('-').reverse()[0];
 			colIndex = parseInt(colIndex, 10);
 			dropCircle(colIndex);
+			$( '#turn' ).html("<p>It's "+(currentPlayer ? 'Red' : 'Yellow')+"'s turn</p>");
 		};
-		_(tableSize[1]).times(function(rowIndex) {
-			_(tableSize[0]).times(function(colIndex) {
-				$('#main').append(createConnectCircle(colIndex, rowIndex));
-			});
-		});
+		resetGame();
 	</script>
 	</body>
 </html>
