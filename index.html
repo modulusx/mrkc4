@@ -6,12 +6,12 @@
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.2/normalize.min.css">
 	<style type="text/css" media="all">
 	#page {
-		width: 100vw; 
+		width: 105vw; 
 		height: 76vw;
-		max-height: 100vh;
-		max-width: 108vh;
+		max-height: 76vh;
+		max-width: 100vh;
 
-		margin: auto;
+		margin: 0 auto auto auto;
 		position: absolute;
 		top:0;bottom:0;
 		left:0;right:0;
@@ -33,10 +33,10 @@
 	.item {
 		border-radius: 55px;
 		background-color: #FFFFFF;
-		width: 14vw;
-		height: 14vw;
-		max-height: 14vh;
-		max-width: 14vh;
+		width: 13vw;
+		height: 13vw;
+		max-height: 13vh;
+		max-width: 13vh;
 		float: left;
 		border: 5px solid #0000FF;
 	}
@@ -240,7 +240,7 @@
 			colIndex = parseInt(colIndex, 10);
 			$( '#header' ).toggleClass("yellowTurn").toggleClass("redTurn");
 			dropCircle(colIndex);
-			$( '#turn' ).html("It's "+(currentPlayer ? 'Red' : 'Yellow')+"'s turn");
+			$( '#turn' ).html("It's "+(currentPlayer ? 'Red' : 'Yellow')+"'s turn! ");
 		};
 		resetGame();
 	</script>
