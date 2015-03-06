@@ -40,9 +40,6 @@
 		float: left;
 		border: 5px solid #0000FF;
 	}
-	.item.active {
-		background-color: #00FF00;
-	}
 	.item.red {
 		background-color: #FF0000;
 	}
@@ -58,13 +55,16 @@
 	.row-0 {
 		cursor: pointer;
 	}
+	.row-0:hover {
+		background-color: #00FF00;
+	}
 	</style>
 </head>
 <body>
 	<div id="page">
 		<div id="header" class="yellowTurn">
 			<div id="wins"> Yellow: 0, Red: 0 </div>
-			<div id="turn"> It's Yellow's turn </div>
+			<div id="turn"> It's yellow's Turn first! <br/> Please click at the top of the row in which you'd like to drop a game piece. </div>
 		</div>
 		<div id="main"/>
 	</div>
@@ -133,6 +133,7 @@
 					$('#main').append(createConnectCircle(colIndex, rowIndex));
 				});
 			});
+
 			// Reset header to yellow
 			$( '#header' ).removeClass("yellowTurn").removeClass("redTurn");
 			$( '#header' ).addClass("yellowTurn");
@@ -149,9 +150,10 @@
 			$('.item.col-' + colIndex + '.row-' + pos).addClass((currentPlayer ? 'yellow' : 'red'));
 			tableState[colIndex][pos] = currentPlayer ? 1 : 2;
 
-			// Unbind the click listener on a full column
+			// Unbind the click listener on a full column and disable the green hover state
 			if (pos === 0) {
 				$('.item.col-' + colIndex + '.row-' + pos).unbind('click');
+				$('.item.col-' + colIndex + '.row-' + pos).removeClass('row-0');
 			}
 
 			// Check to see if the game is over
