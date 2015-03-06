@@ -62,6 +62,9 @@
 		var tableHeight = 6;
 		var tableSize = [tableWidth, tableHeight];
 
+		// Number of consecutive pieces required to win
+		var piecesToWin = 4;
+
 		// Maintain state of the gameboard in a 2D array
 		var tableState = _.range(tableWidth).map(function () {
 			return _.range(tableHeight).map(function () {
@@ -76,6 +79,7 @@
 		var totalMoves = 0;
 		var lastMovedBy = false;
 		var currentPlayer = false;
+
 		var dropCircle = function(colIndex) {
 			// Keep track of the total number of moves
 			totalMoves++;
@@ -84,6 +88,7 @@
 
 			// Position should be the first empty spot starting at the table going up
 			var pos = activeRow[colIndex]--;
+
 			$('.item.col-' + colIndex + '.row-' + pos).addClass((currentPlayer ? 'yellow' : 'red'));
 			tableState[colIndex][pos] = currentPlayer ? 1 : 2;
 			tryToGameOver(colIndex, pos);
@@ -94,9 +99,53 @@
 			}
 		};
 		var tryToGameOver = function(col, row) {
+			// Check to see if the current player just won the game
+			if (1 + piecesInRow(col,row,0) >= piecesToWin) {
+				alert('Game Over - '+((currentPlayer ? 'Yellow' : 'Red')+' wins the game!'));
+			}
 			// End the game on a Tie if no one wins and board is full
-			if (totalMoves === (tableHeight * tableWidth)) {
+			else if (totalMoves === (tableHeight * tableWidth)) {
 				alert('Game Over - Tie Game!');
+			}
+		};
+		// Recursive function to return value of the row with the most consecutive pieces for the current player
+		var piecesInRow = function(col,row,dir) {
+			// End conditions - outside the bounds of the table, or non-player value in table
+			if ((col < 0 || tableWidth <= col) || (row < 0 || tableHeight <= row) ||
+				 (tableState[col][row] != (currentPlayer ? 1 : 2))) {
+				return 0;
+			}
+			switch(dir) {
+				// First run - create and run each required recursive function
+				case 0:
+					return _.max([piecesInRow(col,row+1,4),// Search [north] and south
+					piecesInRow(col+1,row-1,1)+piecesInRow(col-1,row+1,5), // Search NE and SW
+					piecesInRow(col+1,row,2)+piecesInRow(col-1,row,6), // Search east and west
+					piecesInRow(col+1,row+1,3)+piecesInRow(col-1,row-1,7) // Search SE and NW
+					]);
+
+					break;
+				case 1:
+					return 1+piecesInRow(col+1,row-1,1);
+					break;
+				case 2:
+					return 1+piecesInRow(col+1,row,2);
+					break;
+				case 3:
+					return 1+piecesInRow(col+1,row+1,3);
+					break;
+				case 4:
+					return 1+piecesInRow(col,row+1,4);
+					break;
+				case 5:
+					return 1+piecesInRow(col-1,row+1,5);
+					break;
+				case 6:
+					return 1+piecesInRow(col-1,row,6);
+					break;
+				case 7:
+					return 1+piecesInRow(col-1,row-1,7);
+					break;
 			}
 		};
 		var gameOver = function() {
