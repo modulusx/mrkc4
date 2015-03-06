@@ -57,8 +57,11 @@
 	.row-0 {
 		cursor: pointer;
 	}
-	.row-0:hover {
-		background-color: #00FF00;
+	.row-0.hoverRed:hover {
+		background-color: #FF0000;
+	}
+	.row-0.hoverYellow:hover {
+		background-color: #FFFF00;
 	}
 	</style>
 </head>
@@ -145,6 +148,8 @@
 			// Keep track of the total number of moves
 			totalMoves++;
 			currentPlayer = !currentPlayer;
+
+			$('.item.row-0').toggleClass("hoverYellow").toggleClass("hoverRed");
 
 			// Position should be the first empty spot starting at the table going up
 			var pos = activeRow[colIndex]--;
@@ -233,6 +238,7 @@
 			var item = $('<div>').addClass('item').addClass('col-' + colIndex).addClass('row-' + rowIndex);
 			if (rowIndex === 0) {
 				item.bind('click', clickHandler);
+				item.addClass("hoverYellow");
 			}
 			return item;
 		};
