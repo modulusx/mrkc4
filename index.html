@@ -133,6 +133,9 @@
 					$('#main').append(createConnectCircle(colIndex, rowIndex));
 				});
 			});
+			// Reset header to yellow
+			$( '#header' ).removeClass("yellowTurn").removeClass("redTurn");
+			$( '#header' ).addClass("yellowTurn");
 		}
 
 		var dropCircle = function(colIndex) {
@@ -233,9 +236,9 @@
 			event.preventDefault();
 			var colIndex = $(this).prop('class').split(' ')[1].split('-').reverse()[0];
 			colIndex = parseInt(colIndex, 10);
+			$( '#header' ).toggleClass("yellowTurn").toggleClass("redTurn");
 			dropCircle(colIndex);
 			$( '#turn' ).html("It's "+(currentPlayer ? 'Red' : 'Yellow')+"'s turn");
-			$( '#header' ).toggleClass("yellowTurn").toggleClass("redTurn");
 		};
 		resetGame();
 	</script>
